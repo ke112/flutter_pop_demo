@@ -9,7 +9,7 @@ class PopBackHandler extends StatefulWidget {
     super.key,
     required this.child,
     required this.onPopRequested,
-    this.canPop = false,
+    this.enableInterceptBack = true,
     this.edgeWidth = 20.0,
     this.swipeThreshold = 100.0,
   });
@@ -20,10 +20,10 @@ class PopBackHandler extends StatefulWidget {
   /// 当用户尝试返回时触发（Android 返回键、iOS 侧滑）
   final VoidCallback onPopRequested;
 
-  /// 是否允许系统默认返回行为
-  /// false: 阻止默认返回，需手动处理
-  /// true: 允许系统自动返回
-  final bool canPop;
+  /// 是否开启拦截返回功能
+  /// true: 拦截返回事件，通过 onPopRequested 回调处理
+  /// false: 不拦截，允许系统默认返回行为
+  final bool enableInterceptBack;
 
   /// iOS 边缘触发区域宽度
   final double edgeWidth;
@@ -50,7 +50,7 @@ class _PopBackHandlerState extends State<PopBackHandler> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: widget.canPop,
+      canPop: !widget.enableInterceptBack,
       onPopInvokedWithResult: (bool didPop, Object? result) {
         if (!didPop) {
           widget.onPopRequested();
@@ -61,7 +61,9 @@ class _PopBackHandlerState extends State<PopBackHandler> {
   }
 
   Widget _buildIOSSwipeDetector(BuildContext context) {
-    if (!_isIOS) {
+    // 非 iOS 平台或未开启拦截功能时，直接返回子组件
+    // 未开启拦截时，iOS 系统自带的侧滑返回手势会正常工作
+    if (!_isIOS || !widget.enableInterceptBack) {
       return widget.child;
     }
 

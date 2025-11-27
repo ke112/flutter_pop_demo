@@ -279,6 +279,7 @@ class _PopScopeTestCustomPageState extends State<PopScopeTestCustomPage> {
     return PopBackHandler(
       // 统一处理所有返回事件（Android 返回键 + iOS 侧滑）
       onPopRequested: _handlePopRequest,
+      // enableInterceptBack: false,
       child: Scaffold(
         appBar: AppBar(
           title: const Text("PopScope 自定义版示例"),
